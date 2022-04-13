@@ -10,14 +10,15 @@ const socket = io.connect('http://localhost:3002');
 const SignInPage = () => { 
   const [form] = Form.useForm();
   const [userLoged, setUserLoged] = useState(false);
-
+  const [userData, setUserData] = useState({});
+ 
   const onSignIn = async (values) => {
     message.loading('Please wait..')
     await getuserData(values).then((res) => {      
       if (res) {
-        localStorage.setItem('userdata', JSON.stringify({username: values.username, loged: true}));
+        setUserData({username: values.username, loged: true, room: values.roomId});
         setUserLoged(true);
-        socket.emit('join_room', res.username);
+        socket.emit('join_room', values.roomId);
         message.destroy();
         message.success(`Welcome ${res.username}`);
       } else {
@@ -29,7 +30,7 @@ const SignInPage = () => {
   return (
     <>
       {userLoged ? (
-        <ChatPage />
+        <ChatPage socket={socket} username={userData.username} room={userData.room}/>
       ) : (
         <Row>
           <Card className="form-container">
@@ -57,7 +58,6 @@ const SignInPage = () => {
               >
                 <Input />
               </Form.Item>
-
               <Form.Item
                 label="Password"
                 name="password"
@@ -69,6 +69,18 @@ const SignInPage = () => {
                 // ]}
               >
                 <Input.Password />
+              </Form.Item>
+              <Form.Item
+                label="Room Id"
+                name="roomId"
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your username!',
+                //   },
+                // ]}
+              >
+                <Input />
               </Form.Item>
               <Form.Item>
                 <Button className="form-btn" type="primary" htmlType="submit">
