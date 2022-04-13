@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Card, Typography, Col, Form, Input, Button, Row } from 'antd';
+import { RightCircleTwoTone } from '@ant-design/icons';
 import './chat.scss';
 
 const ChatPage = ({ room, socket, username }) => {
   const [messageList, setMessageList] = useState([]);
+  const [disableButtoon, setDisableButton] = useState(true);
   const [form] = Form.useForm();
 
   console.log(JSON.parse(localStorage.getItem('userdata')));
 
   const sendMessage = async (data) => {
-    if (data.message !== "") {
+    console.log(data)
+    if (data.message !== undefined || " ") {
       const messageData = {
         room: room,
         author: username,
@@ -19,6 +22,15 @@ const ChatPage = ({ room, socket, username }) => {
       await socket.emit("send_message", messageData);
       setMessageList((list) => [...list, messageData]);
       form.resetFields();
+      setDisableButton(true);
+    }
+  }
+
+  const onChange = (e) => {
+    if (e.target.value !== "") {
+      setDisableButton(false);
+    } else {
+      setDisableButton(true);
     }
   }
 
@@ -64,12 +76,12 @@ const ChatPage = ({ room, socket, username }) => {
           <Input.Group compact>
             <Form.Item
               name="message"
-              style={{ width: 'calc(100% - 66px)'}}
+              style={{ width: 'calc(100% - 100px)'}}
             >
-              <Input placeholder="Message" />
+              <Input onChange={onChange} placeholder="Message" />
             </Form.Item>
             <Form.Item>
-              <Button className="form-btn" type="primary" htmlType="submit">
+              <Button icon={<RightCircleTwoTone />} disabled={disableButtoon} className="form-btn" type="primary" htmlType="submit">
                 Send
               </Button>
             </Form.Item>
