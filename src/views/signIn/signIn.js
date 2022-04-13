@@ -5,7 +5,7 @@ import './signIn.scss';
 import ChatPage from "../chat/chat";
 import getuserData from "../../data/functions/getuser";
 
-const socket = io.connect('http://localhost:3002');
+const socket = io.connect('https://release.d1pmvx2d352l3v.amplifyapp.com:3002');
 
 const SignInPage = () => { 
   const [form] = Form.useForm();
