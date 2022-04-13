@@ -1,74 +1,85 @@
-import React from "react";
-import { Card, Row, Form , Input, Checkbox, Button, Typography, Col } from 'antd';
-import {
-  useHistory, useLocation,
-} from 'react-router-dom';
+import React, { useState } from "react";
+import { Card, Row, Form , Input, Checkbox, Button, Typography, Col, message } from 'antd';
+import io from 'socket.io-client';
 import './signIn.scss';
+import ChatPage from "../chat/chat";
+import getuserData from "../../data/functions/getuser";
 
-const SignInPage = () => {
-  const history = useHistory();
-  const location = useLocation();
+const socket = io.connect('http://localhost:3002');
 
-  const { from } = location.state || { from: { pathname: '/chat' } };
+const SignInPage = () => { 
+  const [form] = Form.useForm();
+  const [userLoged, setUserLoged] = useState(false);
 
-  const onSignIn = () => {
-    history.replace(from, { from: 'chat' });
+  const onSignIn = async (values) => {
+    message.loading('Please wait..')
+    await getuserData(values).then((res) => {      
+      if (res) {
+        localStorage.setItem('userdata', JSON.stringify({username: values.username, loged: true}));
+        setUserLoged(true);
+        socket.emit('join_room', res.username);
+        message.destroy();
+        message.success(`Welcome ${res.username}`);
+      } else {
+        message.destroy();
+        message.error('Invalid login details');
+      }
+    });
   }
   return (
-    <Row>
-      <Card className="form-container">
-        <Col style={{ textAlign: 'center' }}>
-          <Typography.Title level={3}>
-            Sign in
-          </Typography.Title>
-        </Col>
-        <Form
-          layout="vertical"
-          hideRequiredMark
-          size="large"
-          onFinish={onSignIn}
-        >
-          <Form.Item
-            label="Username"
-            name="username"
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: 'Please input your username!',
-            //   },
-            // ]}
-          >
-            <Input />
-          </Form.Item>
+    <>
+      {userLoged ? (
+        <ChatPage />
+      ) : (
+        <Row>
+          <Card className="form-container">
+            <Col style={{ textAlign: 'center' }}>
+              <Typography.Title level={3}>
+                Sign in
+              </Typography.Title>
+            </Col>
+            <Form
+              layout="vertical"
+              hideRequiredMark
+              size="large"
+              onFinish={onSignIn}
+              form={form}
+            >
+              <Form.Item
+                label="Username"
+                name="username"
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your username!',
+                //   },
+                // ]}
+              >
+                <Input />
+              </Form.Item>
 
-          <Form.Item
-            label="Password"
-            name="password"
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: 'Please input your password!',
-            //   },
-            // ]}
-          >
-            <Input.Password />
-          </Form.Item>
-
-          <Form.Item
-            name="remember"
-            valuePropName="checked"
-          >
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
-
-          <Form.Item>
-            <Button className="form-btn" type="primary" htmlType="submit">
-              Sign In
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
-    </Row>
+              <Form.Item
+                label="Password"
+                name="password"
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your password!',
+                //   },
+                // ]}
+              >
+                <Input.Password />
+              </Form.Item>
+              <Form.Item>
+                <Button className="form-btn" type="primary" htmlType="submit">
+                  Sign In
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Row>
+      )}
+    </>
   );
 }
 

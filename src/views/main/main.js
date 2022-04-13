@@ -32,7 +32,7 @@ const MainPage = () => {
             <Link to="/signup">Sign up</Link>
           </Menu.Item>
           <Menu.Item key="signup">
-            <Link to="/signin">Sign in</Link>
+            <Link to="/chat-room">Sign in</Link>
           </Menu.Item>
         </Menu>
       </Header>
@@ -42,8 +42,7 @@ const MainPage = () => {
         >
           <Switch>
             <Route path="/" exact>{null}</Route>
-            <Route path="/signin"><SignInPage /></Route>
-            <Route path="/chat"><ChatPage /></Route>
+            <Route path="/chat-room"><SignInPage /></Route>
           </Switch>
         </Content>
       </Layout>
