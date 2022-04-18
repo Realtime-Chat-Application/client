@@ -61,7 +61,12 @@ const ChatPage = ({ room, socket, username }) => {
                   </>
                   )
               } else {
-                return <Col span={10} className="message-col-left">{messageData.message}</Col>
+                return (
+                  <>
+                    <Col span={10} className="message-col-left">{messageData.message}</Col>
+                    <Col span={14}/>
+                  </>
+                  )
               }
             })}
           </Row>
