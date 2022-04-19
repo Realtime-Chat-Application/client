@@ -7,9 +7,22 @@ pipeline {
       }
     }
     stage("test") {
+      when {
+        expression {
+          BRANCH_NAME == 'development'
+        }
+      }
       steps {
         echo 'testing'
       }
+    }
+  }
+  post {
+    always {
+
+    }
+    success {
+       
     }
   }
 }
