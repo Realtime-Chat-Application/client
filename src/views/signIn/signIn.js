@@ -21,6 +21,7 @@ const SignInPage = () => {
         socket.emit('join_room', values.roomId);
         message.destroy();
         message.success(`Welcome ${res.username}`);
+        console.log('test');
       } else {
         message.destroy();
         message.error('Invalid login details');
